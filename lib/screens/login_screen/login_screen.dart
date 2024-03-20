@@ -30,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool passwordVisibility = false;
   bool _switchValue=false;
+  bool isLoading=false;
   @override
   void dispose() {
     usernameController.dispose();
@@ -124,6 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 16),
               GlobalButton(onTap: (){
+                isLoading=true;
                 context.read<LoginViewModel>().login(context);
                 bool validated = formKey.currentState!.validate();
                 if (validated) {
@@ -162,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     (AppImages.facebook)),
                 ],
               ),
-              SizedBox(height: 66.h),
+              SizedBox(height: 46.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 60.w),
                 child: Row(
@@ -196,6 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
+              if (isLoading) CircularProgressIndicator(),
             ],
           ),
         ),
