@@ -27,7 +27,7 @@ class GlobalButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-      width: width/1.4,
+      width: width,
       height: pixels,
       child: TextButton(
         style: TextButton.styleFrom(

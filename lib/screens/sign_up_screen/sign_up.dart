@@ -1,15 +1,18 @@
 import 'package:fire_base_example/screens/login_screen/login_screen.dart';
+import 'package:fire_base_example/screens/tabs/tab_screen.dart';
 import 'package:fire_base_example/utils/extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import '../../utils/colors/colors.dart';
 import '../../utils/connstants/app_const.dart';
 import '../../utils/images/images.dart';
 import '../../utils/styles/styles.dart';
+import '../../view_models/sign_up_view.dart';
 import '../../widgets/global_button.dart';
 import '../../widgets/universal_textfield.dart';
-import '../profile_screen/profile_screen.dart';
+import '../tabs/profile_screen/profile_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -46,7 +49,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
       child: Scaffold(
         // resizeToAvoidBottomInset: false,
-        body: SingleChildScrollView(
+        body:context.watch<LoginViewModel>().loading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
           padding: EdgeInsets.only(top: 56),
           child: Form(
             autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -136,11 +141,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return const ProfileScreen();
+                        return const TabScreen();
                       },
                     ),
                   );
+
                   bool validated = formKey.currentState!.validate();
+                  context.read<LoginViewModel>().registerUser(
+                    context,
+                    email: emailController.text,
+                    password: passwordController.text,
+                    username: usernameController.text,
+                  );
                   if (validated) {
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("SUCCESS!")));

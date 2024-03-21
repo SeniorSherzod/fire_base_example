@@ -2,6 +2,7 @@ import 'package:fire_base_example/utils/extensions/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import '../../utils/colors/colors.dart';
@@ -9,8 +10,10 @@ import '../../utils/connstants/app_const.dart';
 import '../../utils/images/images.dart';
 import '../../utils/styles/styles.dart';
 import '../../view_models/login_view_models.dart';
+import '../../view_models/sign_up_view.dart';
 import '../../widgets/global_button.dart';
 import '../../widgets/universal_textfield.dart';
+import '../routes.dart';
 import '../sign_up_screen/sign_up.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -50,7 +53,9 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       child:Scaffold(
         // resizeToAvoidBottomInset: false,
-        body: SingleChildScrollView(
+        body:context.watch<LoginViewModel>().loading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
           padding:const EdgeInsets.only(top: 26),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -61,21 +66,30 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: 225.w,
                       child: Image.asset(AppImages.img))),
               SizedBox(height: 50),
-              Text(
-                "Log in",
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                style: AppTextStyle.rubikBold.copyWith(
-                  fontSize: 24,
-                  color: AppColors.black,
-                ),
+
+              Stack(
+                children: [
+
+                  Center(
+                    child: Text(
+                      "Log in",
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyle.rubikBold.copyWith(
+                        fontSize: 24,
+                        color: AppColors.black,
+                      ),
+                    ),
+                  ),
+                  if (isLoading) Center(child: CircularProgressIndicator()),
+                ]
               ),
 
               SizedBox(height: 20),
               UniversalTextFormField(
                 prefix:SvgPicture.asset(AppImages.emails),
                 hintText: "Email",
-                onChanged: context.read<LoginViewModel>().updateEmail,
+                onChanged:(value){},
                 onSubmit: (v){},
                 controller:emailController ,
                 errorText: 'Emailda xato bor',
@@ -86,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
               UniversalTextFormField(
                 prefix:SvgPicture.asset(AppImages.password),
                 hintText: "Password",
-                onChanged:context.read<LoginViewModel>().updatePassword,
+                onChanged:(value){},
                 onSubmit: (v){},
                 controller: passwordController,
                 errorText: 'passworda xatolik bor',
@@ -125,13 +139,11 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 16),
               GlobalButton(onTap: (){
-                isLoading=true;
-                context.read<LoginViewModel>().login(context);
-                bool validated = formKey.currentState!.validate();
-                if (validated) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("SUCCESS!")));
-                }
+                context.read<LoginViewModel>().loginUser(
+                  context,
+                  email: emailController.text,
+                  password: passwordController.text,
+                );
               },
                 pixels: 53,
                 colors: AppColors.c_1A72DD,
@@ -180,13 +192,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
+                        Navigator.pushReplacementNamed(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return const SignUpScreen();
-                            },
-                          ),
+                          RouteNames.registerRoute,
                         );
                       },
                       child: Text(
@@ -198,7 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-              if (isLoading) CircularProgressIndicator(),
+
             ],
           ),
         ),
